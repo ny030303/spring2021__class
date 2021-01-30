@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.3.xsd
+		http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring-1.2.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+	
+	<!-- @Controller : 어노테이션 문법 만들어지기 이전에 객체 만들던 방법이
+	xml 파일에다가 xml 태그를 이용해 클래스를 기술해주면 객체 만들던 방법
+	스프링 2.0 부터인가 xml 이 아니라 어노테이션으로 바뀌었음
+	근데 데이터베이스 연결은 어노테이션불가, 이전에 쓰던 방식(xml)으로
+	 -->
+	<!-- db와 관련된건은 반드시 여기에 
+	org.apache.commons.dbcp2.BasicDataSource 클래스로 dataSource 라는 이름의
+	객체를 만들어라
+	BasicDataSource 클래스 안에 driverClassName, url, username, password
+	
+	톰캣 만든 회사에서 디비커넥션풀 클래스를 만들었는데 클래스명이
+	org.apache.commons.dbcp2.BasicDataSource
+	이다
+	org.apache.commons.dbcp2.BasicDataSource dataSource
+	= new org.apache.commons.dbcp2.BasicDataSource();
+	dataSource.setDriverClassName("oracle.jdbc.driver.OracleDriver");
+	dataSource.setUrl("jdbc:oracle:thin:@127.0.0.1:1521:xe");
+	dataSource.setUsername("user01");
+	dataSource.setPassword("1234");
+	-->
+	<bean id="dataSource" 
+		class="org.apache.commons.dbcp2.BasicDataSource" 
+		destroy-method="close"> 
+		<property name="driverClassName">
+			<value>oracle.jdbc.driver.OracleDriver</value>
+		</property>
+		<property name="url">
+			<value>jdbc:oracle:thin:@127.0.0.1:1521:xe</value>			
+		</property>
+		<property name="username">
+			<value>user01</value>
+		</property>
+		<property name="password">
+			<value>1234</value>
+		</property>
+	</bean>
+		
+    <!--  mybatis 라이브러리랑 연결하기  @Resource 이거 대신에 ref(참조)
+    classpath : src/main/resources 경로를 말한다
+    
+    org.mybatis.spring.SqlSessionFactoryBean sqlSessionFactory
+    = new org.mybatis.spring.SqlSessionFactoryBean();
+    MyBatis 프레임워크 - xml에 쿼리를 기술하면 그 쿼리를 실행시켜서 자바객체로 만들어서
+    전달해주거나 자바객체를 쿼리에 전달해주기도 한다.
+    
+    constructor-arg : 생성자에 파라미터 줄때
+     property : 변수
+     -->		
+	<bean id="sqlSessionFactory"     class="org.mybatis.spring.SqlSessionFactoryBean">
+    	<property name="dataSource"   	ref = "dataSource"></property>
+    	<property name="configLocation"   value="classpath:mybatis/mybatis-config.xml"/>
+    </bean>
+    <!--  classpath :상수값 , resource 폴더 constructor-arg :생성자 -->
+    <bean id="sm"   class="org.mybatis.spring.SqlSessionTemplate">
+    	<constructor-arg index="0"	ref="sqlSessionFactory" >
+    	</constructor-arg>
+   </bean>
+</beans>

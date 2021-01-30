@@ -1,0 +1,964 @@
+windows - preferences - server - Runtime Environment  
+add 선택후 톰캣과 연동하기 
+
+1. 프로젝트 만들기  
+File - New - File - New - Spring Legacy Project 
+
+맨 하단의 Spring MVC  선택 후 myhome  추가 
+
+
+2. com.goodee.myhome  추가 
+
+
+3.myhome1\src\main\webapp\WEB-INF\web.xml파일
+
+web.xml 파일에 내용 추가하기 
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee https://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+
+	<!-- 여기서부터 추가하기  시작                      -->
+	<!-- web.xml파일 :	 폼 입력 항목에 한글을 입력할 수 있도록 한다 -->
+	<filter>
+		<filter-name>CharacterEncodingFilter</filter-name>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+		<init-param>
+			<param-name>forceEncoding</param-name>
+			<param-value>true</param-value>
+		</init-param>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>CharacterEncodingFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<!--   여기까지 붙여 넣는다 -----------> 
+
+	<!-- The definition of the Root Spring Container shared by all Servlets and Filters -->
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>/WEB-INF/spring/root-context.xml</param-value>
+	</context-param>
+	
+	<!-- Creates the Spring Container shared by all Servlets and Filters -->
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+
+	<!-- Processes application requests -->
+	<servlet>
+		<servlet-name>appServlet</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>/WEB-INF/spring/appServlet/servlet-context.xml</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+		
+	<servlet-mapping>
+		<servlet-name>appServlet</servlet-name>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+
+</web-app>
+
+보통 해당 라이브러리가 maven 에 있는데 모든 밴더업체가 그런거는 아니다 
+그럴때는 WEB-INF  폴더 아래에 lib 라는 폴더를 만들자
+거기에 필요로 하는 라이브러리를 복사해서 붙여넣자 
+
+오라클같은 경우에 C:\oraclexe\app\oracle\product\11.2.0\server\jdbc\lib
+에 있는 ojdbc6_g.jar 복사 붙여넣기 
+정식 버전의 경우에는 폴더 경로가 다르고 파일명도 다르다(ojdbc14.jar)
+정식버전의 경우 숫자 14는 자바버전 자바 1.4 이상부터 이 파일써라 
+
+프로젝트명 - 마우스 오른쪽 - property - java build path 
+- libraries 탭 선택후 - Add library - Web App Library 
+
+
+4. pom.xml파일 수정하기 
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.goodee</groupId>
+	<artifactId>myapp</artifactId>
+	<name>myhome1</name>
+	<packaging>war</packaging>
+	<version>1.0.0-BUILD-SNAPSHOT</version>
+	<properties>
+		<java-version>1.6</java-version>
+		<org.springframework-version>3.1.1.RELEASE</org.springframework-version>
+		<org.aspectj-version>1.6.10</org.aspectj-version>
+		<org.slf4j-version>1.6.6</org.slf4j-version>
+	</properties>
+	<dependencies>
+		<!-- Spring -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>${org.springframework-version}</version>
+			<exclusions>
+				<!-- Exclude Commons Logging in favor of SLF4j -->
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				 </exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>${org.springframework-version}</version>
+		</dependency>
+				
+		<!-- AspectJ -->
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjrt</artifactId>
+			<version>${org.aspectj-version}</version>
+		</dependency>	
+		
+		<!-- Logging -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${org.slf4j-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<version>${org.slf4j-version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>${org.slf4j-version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.15</version>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.mail</groupId>
+					<artifactId>mail</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.jms</groupId>
+					<artifactId>jms</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.sun.jdmk</groupId>
+					<artifactId>jmxtools</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.sun.jmx</groupId>
+					<artifactId>jmxri</artifactId>
+				</exclusion>
+			</exclusions>
+			<scope>runtime</scope>
+		</dependency>
+
+		<!-- @Inject -->
+		<dependency>
+			<groupId>javax.inject</groupId>
+			<artifactId>javax.inject</artifactId>
+			<version>1</version>
+		</dependency>
+				
+		<!-- Servlet -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.5</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet.jsp</groupId>
+			<artifactId>jsp-api</artifactId>
+			<version>2.1</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>jstl</artifactId>
+			<version>1.2</version>
+		</dependency>
+	
+		<!-- Test -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.7</version>
+			<scope>test</scope>
+		</dependency>    
+		
+		<!--  json 용 -->
+		<dependency> 
+		    <groupId>org.codehaus.jackson</groupId> 
+		    <artifactId>jackson-mapper-asl</artifactId> 
+		    <version>1.9.13</version> 
+		</dependency>
+		
+		<dependency> 
+		    <groupId>com.fasterxml.jackson.core</groupId> 
+		    <artifactId>jackson-databind</artifactId> 
+		    <version>2.8.5</version> 
+		</dependency>
+
+		<!--  MyBatis용 *********************** -->
+		<!-- https://mvnrepository.com/artifact/org.mybatis/mybatis -->
+		<dependency>
+		    <groupId>org.mybatis</groupId>
+		    <artifactId>mybatis</artifactId>
+		    <version>3.4.6</version>
+		</dependency>
+		
+		<!--  mybatis랑 spring 연동 라이브러리  -->
+		<!-- https://mvnrepository.com/artifact/org.mybatis/mybatis-spring -->
+		<dependency>
+		    <groupId>org.mybatis</groupId>
+		    <artifactId>mybatis-spring</artifactId>
+		    <version>1.3.3</version>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.springframework/spring-jdbc -->
+		<dependency>
+		    <groupId>org.springframework</groupId>
+		    <artifactId>spring-jdbc</artifactId>
+		    <version>${org.springframework-version}</version>
+		</dependency>
+		<!-- 아파치에서 제공하는 디비커넥션 - 디비커넥션 풀 -->
+		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-dbcp2 -->
+		<dependency>
+		    <groupId>org.apache.commons</groupId>
+		    <artifactId>commons-dbcp2</artifactId>
+		    <version>2.7.0</version>
+		</dependency>
+		<!-- ************************************************   -->
+	</dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-eclipse-plugin</artifactId>
+                <version>2.9</version>
+                <configuration>
+                    <additionalProjectnatures>
+                        <projectnature>org.springframework.ide.eclipse.core.springnature</projectnature>
+                    </additionalProjectnatures>
+                    <additionalBuildcommands>
+                        <buildcommand>org.springframework.ide.eclipse.core.springbuilder</buildcommand>
+                    </additionalBuildcommands>
+                    <downloadSources>true</downloadSources>
+                    <downloadJavadocs>true</downloadJavadocs>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.5.1</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                    <compilerArgument>-Xlint:all</compilerArgument>
+                    <showWarnings>true</showWarnings>
+                    <showDeprecation>true</showDeprecation>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.2.1</version>
+                <configuration>
+                    <mainClass>org.test.int1.Main</mainClass>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+
+
+5. src\main\webapp\WEB-INF\lib  폴더 만들고 
+ojdbc6_g.jar 복사해서 붙여넣기 - 오라클 xe폴더에 있다 
+
+
+
+
+1.pom.xml 파일에 추가할 내용
+
+		<dependency> 
+		    <groupId>org.codehaus.jackson</groupId> 
+		    <artifactId>jackson-mapper-asl</artifactId> 
+		    <version>1.9.13</version> 
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
+		<dependency>
+	    	<groupId>com.fasterxml.jackson.core</groupId>
+	    	<artifactId>jackson-databind</artifactId>
+	    	<version>2.8.4</version>
+		</dependency>
+		
+		
+		<!-- https://mvnrepository.com/artifact/org.mybatis/mybatis -->
+		<dependency>
+		    <groupId>org.mybatis</groupId>
+		    <artifactId>mybatis</artifactId>
+		    <version>3.4.1</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.mybatis/mybatis-spring -->
+		<dependency>
+		    <groupId>org.mybatis</groupId>
+		    <artifactId>mybatis-spring</artifactId>
+		    <version>1.3.0</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.springframework/spring-jdbc -->
+		<dependency>
+		    <groupId>org.springframework</groupId>
+		    <artifactId>spring-jdbc</artifactId>
+		    <version>${org.springframework-version}</version>
+		</dependency>
+		
+        <!--  파일 업로드시 필요한 라이브러리 
+        commons-io, commons-fileupload 
+        maven respsitory 에서 찾아서 써야 함 
+        -->
+       <dependency>
+		    <groupId>commons-io</groupId>
+		    <artifactId>commons-io</artifactId>
+		    <version>2.0.1</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>commons-fileupload</groupId>
+		    <artifactId>commons-fileupload</artifactId>
+		    <version>1.3.1</version>
+		</dependency>
+		
+		<!-- aop를 위한 jar 파일들  -->
+		<!-- https://mvnrepository.com/artifact/org.aspectj/aspectjweaver -->
+		<dependency>
+		    <groupId>org.aspectj</groupId>
+		    <artifactId>aspectjweaver</artifactId>
+		    <version>${org.aspectj-version}</version>
+		</dependency>
+				
+		<!-- https://mvnrepository.com/artifact/org.aspectj/aspectjtools -->
+		<!-- 
+		<dependency>
+		    <groupId>org.aspectj</groupId>
+		    <artifactId>aspectjtools</artifactId>
+		    <version>${org.aspectj-version}</version>
+		</dependency>
+		-->
+		
+		<!--  db connection pool 제공하는 클래스 -->
+		<dependency>
+		    <groupId>org.apache.commons</groupId>
+		    <artifactId>commons-dbcp2</artifactId>
+		    <version>2.1.1</version>
+		</dependency>
+
+
+
+2.web.xml파일 설정
+	<!-- web.xml파일 :	 폼 입력 항목에 한글을 입력할 수 있도록 한다 -->
+	<filter>
+		<filter-name>CharacterEncodingFilter</filter-name>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+		<init-param>
+			<param-name>forceEncoding</param-name>
+			<param-value>true</param-value>
+		</init-param>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>CharacterEncodingFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+
+3. root-context.xml 파일
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.3.xsd
+		http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring-1.2.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+	
+	<!-- db와 관련된건은 반드시 여기에  -->
+	<bean id="dataSource" 
+	class="org.apache.commons.dbcp2.BasicDataSource" 
+	destroy-method="close"> 
+		<property name="driverClassName">
+			<value>oracle.jdbc.driver.OracleDriver</value>
+		</property>
+		<property name="url">
+			<value>jdbc:oracle:thin:@127.0.0.1:1521:xe</value>			
+		</property>
+		<property name="username">
+			<value>user01</value>
+		</property>
+		<property name="password">
+			<value>1234</value>
+		</property>
+	</bean>
+		
+    <!--  mybatis 라이브러리랑 연결하기  -->		
+	<bean id="sqlSessionFactory"     class="org.mybatis.spring.SqlSessionFactoryBean">
+    	<property name="dataSource"   	ref = "dataSource"></property>
+    	<property name="configLocation"   value="classpath:mybatis/mybatis-config.xml"/>
+    </bean>
+    <!--  classpath :상수값 , resource 폴더 -->
+    <bean id="sm"   class="org.mybatis.spring.SqlSessionTemplate">
+    	<constructor-arg index="0"	ref="sqlSessionFactory" >
+    	</constructor-arg>
+   </bean>
+   
+   <!-- 트랜잭션 처리 -->
+   <bean id="transactionManager" 
+   class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+   		<property name="dataSource"
+   		          ref="dataSource"></property>
+   </bean>
+   <tx:advice id="txAdvice"
+      transaction-manager="transactionManager">
+      	<tx:attributes>
+      		<tx:method name="get*" read-only="true"/>
+      		<tx:method name="insert*" 
+      		 propagation="REQUIRED" 
+      		 rollback-for="Exception"/>
+      		<tx:method name="update*" 
+      		 propagation="REQUIRED" 
+      		 rollback-for="Exception"/>
+      		<tx:method name="delete*" 
+      		 propagation="REQUIRED" 
+      		 rollback-for="Exception"/>
+      	</tx:attributes>
+   </tx:advice>
+</beans>
+
+myBatis 설정파일 놓는곳 
+src
+	main
+        resource 
+            mybatis 
+                 mybatis-config.xml
+
+ 내용 
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+
+<!--  원래 클래스명은 패키지까지 포함하기때문에
+너무 길어서 짧은 별명을 만들어서 접근하기 위해
+기술한다  -->
+	<typeAliases>
+    	<typeAlias alias="boardDto" type="com.mycompany.myapp.board.boardDto"/>
+			
+	</typeAliases>
+
+	<mappers>
+	  <mapper resource=	"/com/mycompany/myapp/mapper/board.xml"/>
+	
+	</mappers>
+	
+</configuration>
+
+
+board.xml파일 만들기 
+위치 
+src 
+     main
+           java 
+               com
+                       mycompany
+                               myapp 
+                                         mapper 
+                                               board.xml파일 
+내용
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="board">
+	<!-- MyBatis ${필드명} 맵핑이 먼저 이루어진다 #{필드명} 맵핑이 나중에 이루어진다 쿼리를 콘솔에서 보면 $가 붙은건 
+		? 가 아니라 실제 값으로 보여요 #이 붙은거는 ? 로 보인다 나중에 실제 값하고 결합한다 #붙은건 데이터 타입에 따라서 자동으로 
+		'를 붙여준다 $는 그냥 그 위치에 문자열을 내보낼 뿐이라서 '가 필요하면 직접 붙여줘야 한다 $는 데이터를 문자열을 줘도 그대로 
+		옮겨놓는다 테이블명이나 필드명이 추가되거나 할때는 ${필드명} 또는 ${테이블명} -->
+	<select id="board_getList" parameterType="boardDto"	resultType="boardDto">
+ 
+		select * from
+		(
+		select
+			A.id
+			,A.title
+			,A.writer
+			,A.contents --내용
+			,to_char(A.wdate, 'yyyy-mm-dd') wdate
+			,row_number() over (order by A.id desc) as num
+			,ceil(row_number () over (order by A.id)/10-1) as pg
+			from board A
+		)where pg=#{pg}
+
+	</select>
+	<!-- PreparedStatement 사용하면서 파라미터를 ?로 했는데 이게 mybatis는 #{변수명} 으로 대체 #{pg} 
+		parameterType에 반드시 pg 라는 변수가 있어야 한다 그래서 getPg 라는 함수를 호출해서 값을 읽어와 끼워넣기 한다 
+		디비에서 데이타를 가져와서 select 쿼리가 데이타를 보낼때는 resultType에서 지정한 클래스 안에 각 필드들에 대한 변수가 
+		모두 있어야 한다. set변수명을 다 일일이 호출해서 데이터 넣어서 객체만들고 그 객체를 리스트에 저장해서 보낸다 -->
+
+	<insert id="board_insert" parameterType="boardDto">
+		<!-- select 쿼리를 먼저 진행하도록 resultType 반환이 Integer타입 keyProperty 결과 받을 변수 
+			order 진행순서 BEFORE 를 쓰면 먼저 진행된다 -->
+		<selectKey resultType="String" keyProperty="id" order="BEFORE">
+			select nvl(max(id),0)+1 as id
+			from board
+		</selectKey>
+		insert into board(
+			id
+			,title
+			,contents
+			,writer
+			,wdate
+		)values(
+			#{id}
+			,#{title}
+			,#{contents}
+			,#{writer}
+			,sysdate
+		)
+	</insert>
+
+	<select id="board_getTotalCount" parameterType="boardDto" 	resultType="Integer">
+		select count(*)
+		from board
+		
+	</select>
+
+	<select id="board_getView" parameterType="String" 	resultType="boardDto">
+		select
+			A.seq
+			,A.title
+			,A.writer
+			,A.wdate
+			,A.contents --내용
+			,to_char(A.wdate, 'yyyy-mm-dd') wdate
+		from board A
+		where id=#{id}
+	</select>
+
+	
+	
+	<!-- 수정용 -->
+	<update id="board_update" parameterType="boardDto">
+		update 	board
+			set title = #{title}
+			,contents = #{contents}
+			,writer = #{writer}
+		where seq=#{seq}
+	</update>
+
+	<!-- 삭제용 -->
+	<update id="board_delete" parameterType="boardDto">
+		update	board
+		where id=#{id}
+	</update>
+
+</mapper>
+
+
+
+
+
+
+
+
+log4j.xml 수정하기 --- 주의사항: 폴더 경로에 한글있으면 인식못함 
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration PUBLIC "-//APACHE//DTD LOG4J 1.2//EN" "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+	<!-- Appenders -->
+	<appender name="console" class="org.apache.log4j.ConsoleAppender">
+		<param name="Target" value="System.out" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%-5p: %c - %m%n" />
+		</layout>
+	</appender>
+	
+	<!-- Application Loggers -->
+	<logger name="com.multi.myhome1">
+		<level value="info" />
+	</logger>
+	
+	<!-- 3rdparty Loggers -->
+	<logger name="org.springframework.core">
+		<level value="info" />
+	</logger>
+	
+	<logger name="org.springframework.beans">
+		<level value="info" />
+	</logger>
+	
+	<logger name="org.springframework.context">
+		<level value="info" />
+	</logger>
+
+	<logger name="org.springframework.web">
+		<level value="info" />
+	</logger>
+
+ <!-- java.sql을 위한 설정   ********** 추가 -->
+    <logger name="java.sql.Connection">
+    	<level value="debug"/>
+    </logger>
+    <logger name="java.sql.Statement">
+    	<level value="debug"/>
+    </logger>
+    <logger name="java.sql.PreparedStatement">
+    	<level value="debug"/>
+    </logger>
+    <logger name="java.sql.ResultSet">
+    	<level value="debug"/>
+    </logger>
+        
+	<!-- Root Logger -->
+	<root>
+		<!-- <priority value="warn" />-->
+		<level value="DEBUG"/>
+		<appender-ref ref="console" />
+	</root>
+	
+</log4j:configuration>
+
+
+계정만들기 
+conn system/1234
+create user user01 identified by 1234;
+grant connect, resource to user01;
+conn user01/1234;
+
+create table board( id number primary key , title varchar2(30), writer varchar2(30), wdate date, contents varchar(100));
+insert into board values (1, '제목1', '작성자1', sysdate, '내용1');
+insert into board values (2, '제목2', '작성자2', sysdate, '내용2');
+insert into board values (3, '제목3', '작성자3', sysdate, '내용3');
+insert into board values (4, '제목4', '작성자4', sysdate, '내용4');
+insert into board values (5, '제목5', '작성자5', sysdate, '내용5');
+insert into board values (11, '제목1', '작성자1', sysdate, '내용1');
+insert into board values (12, '제목2', '작성자2', sysdate, '내용2');
+insert into board values (13, '제목3', '작성자3', sysdate, '내용3');
+insert into board values (14, '제목4', '작성자4', sysdate, '내용4');
+insert into board values (15, '제목5', '작성자5', sysdate, '내용5');
+insert into board values (16, '제목1', '작성자1', sysdate, '내용1');
+insert into board values (17, '제목2', '작성자2', sysdate, '내용2');
+insert into board values (18, '제목3', '작성자3', sysdate, '내용3');
+insert into board values (19, '제목4', '작성자4', sysdate, '내용4');
+insert into board values (20, '제목5', '작성자5', sysdate, '내용5');
+commit;
+
+
+파일명 : GuestbppkDto.java
+ package com.mycompany.myapp.board;
+
+public class boardDto {
+	private int id;
+	private int pg=0;
+	
+	private String title="";
+	private String writer="";
+	private String wdate="";
+	private String contents="";
+	
+	public boardDto() {}
+	public boardDto(int id, String title, String writer, String wdate, String contents) {
+		super();
+		this.id = id;
+		this.title = title;
+		this.writer = writer;
+		this.wdate = wdate;
+		this.contents = contents;
+	}
+	
+	public int getPg() {
+		return pg;
+	}
+	public void setPg(int pg) {
+		this.pg = pg;
+	}
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+	public String getTitle() {
+		return title;
+	}
+	public void setTitle(String title) {
+		this.title = title;
+	}
+	public String getWriter() {
+		return writer;
+	}
+	public void setWriter(String writer) {
+		this.writer = writer;
+	}
+	public String getWdate() {
+		return wdate;
+	}
+	public void setWdate(String wdate) {
+		this.wdate = wdate;
+	}
+	public String getContents() {
+		return contents;
+	}
+	public void setContents(String contents) {
+		this.contents = contents;
+	}
+	
+	
+}
+
+파일명 : boardDao.java
+package com.mycompany.myapp.board;
+
+import java.util.List;
+
+public interface boardDao {
+	List<boardDto> getList(boardDto dto);
+	void insert(boardDto dto);
+}
+
+
+파일명 : boardDaoImpl.java
+package com.mycompany.myapp.board;
+
+import java.util.List;
+
+import org.mybatis.spring.SqlSessionTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public class boardDaoImpl implements boardDao {
+
+	@Autowired
+	SqlSessionTemplate sm;
+	
+	@Override
+	public List<boardDto> getList(boardDto dto) {
+		// TODO Auto-generated method stub
+		return sm.selectList("board_getList", dto);
+	}
+
+	@Override
+	public void insert(boardDto dto) {
+		sm.insert("board_insert", dto);
+		
+	}
+
+}
+
+파일명: boardController.java
+package com.mycompany.myapp.board;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+@Controller
+public class boardController {
+	@Autowired
+	boardDao dao;
+	
+	@RequestMapping("/board/listjson/{pg}")
+	@ResponseBody
+	List<boardDto> getList(@PathVariable("pg")int pg, boardDto dto){
+		if(dto==null)
+			dto = new boardDto();
+		dto.setPg(pg);
+		return dao.getList(dto);
+	}
+	
+	@RequestMapping("/board/insertjson/")
+	@ResponseBody
+	String insert(@RequestBody boardDto dto){
+		
+		dao.insert(dto);
+		return "success";
+	}
+	
+}
+
+
+호출예 
+http://localhost:9000/myapp/board/listjson/0
+
+에러메시지
+java.lang.IllegalArgumentException: Mapped Statements collection does not contain value for board_list
+
+
+set linesize 1000
+set pagesize 20 
+
+오라클에서 사용하는 페이징쿼리 
+1. rownum  
+-- 오라클에는 데이터를 select 하면 rownum 가상의 필드가 생기면서 1,2,3,4 자동으로 부여한다
+select rownum, id, title from board; 
+
+select  id, title from board
+where rownum<=5; 
+
+-- 이 연산 불가 
+select  id, title from board
+where rownum>5 and rownum<=10; 
+
+수정1
+select * from 
+(
+	select  rownum as num, id, title 
+	from board
+	where rownum<=10
+)
+where num>5 ;
+
+수정2
+select * from 
+(
+	select  rownum as num, id, title 
+	from board
+	where rownum<=10
+	order by id desc
+)
+where num>5
+
+수정3
+select * from 
+(
+	select rownum as num, id, title 
+	from( 
+		select   id, title 
+		from board
+		order by id desc
+	)where rownum<=10
+)
+where num>5
+
+불가능쿼리 
+select id, count(*) from board 
+
+2.row_number - 분석함수(윈도우) 
+
+select id, title, row_number() over(order by id desc) as num 
+from board;
+
+select * from
+(
+	select id, title, 
+	row_number() over(order by id desc) as num, 
+	ceil(row_number() over(order by id desc)/5) as pg   
+	from board
+)where pg=2;
+
+create table freeboard 
+(
+	id number(11) primary key, 
+	title varchar2(300), 
+	writer varchar2(40),
+	hit number,
+	wdate date,
+	delyn char(1),
+	contents clob
+);
+
+insert into freeboard (id, title, wdate)
+values(1, '제목1',  sysdate);
+
+insert into freeboard (id, title, wdate)
+values(2, '제목2',  sysdate);
+
+insert into freeboard (id, title, wdate)
+values(3, '제목3',  sysdate);
+
+insert into freeboard (id, title, wdate)
+values(4, '제목4',  sysdate);
+
+insert into freeboard (id, title, wdate)
+values(5, '제목5',  sysdate);
+
+insert into freeboard (id, title, wdate)
+values(6, '제목6',  sysdate);
+
+insert into freeboard (id, title, wdate)
+values(7, '제목7',  sysdate);
+
+insert into freeboard (id, title, wdate)
+values(8, '제목8',  sysdate);
+
+insert into freeboard (id, title, wdate)
+values(9, '제목9',  sysdate);
+
+insert into freeboard (id, title, wdate)
+values(10, '제목10',  sysdate);
+
+
+-- row_number 라는 분석함수를 이용해 페이징을 해보자
+
+-- 한페이지에 3개씩
+select  
+		id
+		,title
+		,num
+		,to_char(wdate, 'yyyy-mm-dd') wdate
+		,nvl(hit, 0) hit  
+		,writer
+	from 
+	(
+		select 
+			id 
+			,title
+			,writer
+			,wdate
+			,hit
+			,row_number() over(order by id desc) as num
+			,ceil(row_number() over(order by id desc) /3 ) as pg  
+		from freeboard
+	)where pg=#{pg}
+
+
+1 2 3 -1 몫 1
+4 5 6 -2     2
+7 8 9 -3     3
+
+ceil - 무조건  올림 0.1 0.2 0.9 ---> 1

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="FreeBoard">
+	
+	<select id="FreeBoard_getList" resultType="FreeboardDto">
+	select  
+		id
+		,title
+		,num
+		,to_char(wdate, 'yyyy-mm-dd') wdate
+		,nvl(hit, 0) hit  
+		,writer
+	from 
+	(
+		select 
+			id 
+			,title
+			,writer
+			,wdate
+			,hit
+			,row_number() over(order by id desc) as num
+			,ceil(row_number() over(order by id desc) /3 )-1 as pg  
+		from freeboard
+	)where pg=#{pg}
+	</select>
+	
+	<!-- parameterType 의 경우는 insert 하려면 form 태그에서 전달된 값을 받아와서
+	 insert 쿼리에 전달할 개체에 대한 정보
+	  -->
+	<insert id="FreeBoard_insert" parameterType="FreeboardDto">
+		<!-- 선행쿼리 이걸 먼저 실행하고 결과를 받아서 다음쿼리를 실행한다  
+		    selectKey 로 시작해서 resultType:결과타입 
+		    keyProperty:결과받아와서 저장할 변수명, 
+		    order:BEFORE 먼저실행해라  -->
+		<selectKey resultType="String"  keyProperty="id"  order="BEFORE">
+			select nvl(max(id),0)+1 as id
+			from freeboard
+		</selectKey>
+		
+		insert into freeboard
+		(
+			id,
+			title,
+			contents,
+			writer,
+			wdate,
+			hit,
+			delyn
+		)
+		values
+		(
+			#{id},
+			#{title},
+			#{contents},
+			#{writer},
+			sysdate,
+			0,
+			'N'
+		)
+	</insert>
+	<select id="FreeBoard_view" parameterType="String" resultType="FreeboardDto">
+		select id, title, writer, contents,
+		to_char(wdate, 'yyyy-mm-dd') wdate,
+		hit
+		from freeboard 
+		where id=#{id}
+	</select>
+	
+	<!-- 조회수 증가 -->
+	<update id="FreeBoard_hit" parameterType="String">
+	update hit=hit+1
+	where id=#{id}
+	</update>
+</mapper>
+	

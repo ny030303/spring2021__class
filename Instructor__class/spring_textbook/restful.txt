@@ -1,0 +1,222 @@
+restful 
+
+
+코틀린은 이용한 안드로이드 개발 (앱)  
+디비 클라이언트를 설치 
+내부 sqlite 
+
+웹을 접근가능한 클래스 ------------------------------------------> 웹서버 
+                                                                 디비로부터 데이터를 읽어서
+                                                                 안드로이드한테 전달
+                                                                 JSON 형태의 데이터를 전달
+                                                                 XML(XML웹서비스)
+                                                                 실행결과를 html, jsp를 
+                                                                 이용해서 화면에 결과 보여주는데 
+                                                                 이제 JSON데이터만 
+                                                                 스프링부트 부터는 아예 jsp엔진 제외 
+                    GET, POST(insert), PUT(update), DELETE(delete) 
+                    데이터 가져올때
+안드로이드 
+react - nodejs                                                   nodejs, java, asp, asp.net, php 
+vue
+angular
+polymer (프론트앤드)                                             백앤드
+
+                                          JSON
+클라이언트 ------------------> 프론트앤드 ----------> 백앤드  ----------> 디비서버 
+          <-----------------            <---------          <---------
+                                          JSON 
+
+파이썬을 이용한 데이터 크롤링, 공공기관에 오픈 데이터셋이 xml 또는 json 
+카카오톡 api 서버, 트위터, 페이스북, 구글 open api 
+
+c:ISAPY  java:서블릿 
+printf("<html>\n");
+...........
+printf("</html>\n");
+
+model1 - 되는데로 
+html 문서에 프로그램언어를 넣자   html - c : php
+                               html -  java : jsp 
+                               html - visual basic : asp 
+                               html - c# : asp.net 
+
+예전의 웹 - jsp, asp, php 
+문제점 : 동일한 문서에 html, css, javascript, java 같이 있다 
+         게시판 데이터 읽어오기 
+         html...
+         css
+         javascript 
+
+         java  를 이용해서 데이터베이스 접속을 하고 
+         데이터 들고와서 
+         html로 바꾸고 
+         디비 연결 종료하고 끝
+
+        디자이너 디자인 수정하려고 해도 수정안됨, 반드시 개발자가 따라서 같이작업 
+        프리제테이션로직(html, css, javascript)과  비지니스 로직(영속성, 디비에 데이터 읽고 쓰기)을 분리하자  
+
+model2 :MVC (Model, View, Controller)
+       Model - 비지니스로직(디비 읽고 쓰기)
+       View-프리젠테이션 로직(html, css, javascript)
+       Controller - Model과 View 연결자 
+
+       클라이언트가 요청 -----------------------------> Controller --------------> Model 
+                                                                 <---------------     
+ 
+                                                       적당한 view를 선택해서 view를 전달해주면 
+
+MVC특화가 프레임워크 - 스프링 
+       서블릿  
+
+프로젝트명 
+   WEB-INF 
+     classes - 자바 파일 번역본이 들어감  
+     lib - c#의 dll, 참조 라이브러리 
+   js
+   css 
+   jsp   
+
+
+maven 이라는 빌딩툴의 등장- 프로젝트 컴파일 + 링크 
+                        라이브러리 - repository 라는 공통의 공간  
+                        war - 배포버전을 만들어줌 
+
+
+순서
+
+src 
+ ㄴ main 
+     ㄴ java     - java 파일 놓는 위치 
+     ㄴ resources - db연결할때 
+     ㄴ webapp - html,css, javascrpt, jsp 
+          ㄴWEB-INF 
+               ㄴclasses
+               ㄴviews 
+                    ㄴhome.jsp 
+               ㄴweb.xml  
+
+웹사이트 - 컨텍스트 
+
+
+1. web.xml을 읽는다 
+  웹사이트 환경설정파일
+
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee https://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+
+	<!-- The definition of the Root Spring Container shared by all Servlets and Filters -->
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>/WEB-INF/spring/root-context.xml</param-value>
+	</context-param>
+	
+	<!-- Creates the Spring Container shared by all Servlets and Filters -->
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+
+	<!-- Processes application requests -->
+	<servlet>
+		<servlet-name>appServlet</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>/WEB-INF/spring/appServlet/servlet-context.xml</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+		
+	<servlet-mapping>
+		<servlet-name>appServlet</servlet-name>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+
+</web-app>
+
+
+2. /WEB-INF/spring/root-context.xml 을 읽는다 
+데이터베이스 연동하는거를 반드시 여기에, 디비연결객체 
+
+3. 
+/WEB-INF/spring/appServlet/servlet-context.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
+
+	<!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
+	
+	<!-- Enables the Spring MVC @Controller programming model -->
+	<annotation-driven />
+
+	<!-- Handles HTTP GET requests for /resources/** by efficiently serving up static resources in the ${webappRoot}/resources directory -->
+	<resources mapping="/resources/**" location="/resources/" />
+
+	<!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
+	<beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<beans:property name="prefix" value="/WEB-INF/views/" />
+		<beans:property name="suffix" value=".jsp" />
+	</beans:bean>
+	
+	<context:component-scan base-package="com.mycompany.myapp" />
+	
+	
+    @Controller 
+    public class IndexController {
+        
+        @RequestMapping("/index")
+        String index() {
+            
+            return "home"; //jsp 문서 이름--    /WEB-INF/views/home.jsp  
+        }
+    }
+
+
+	
+</beans:beans>
+
+4. org.springframework.web.servlet.DispatcherServlet
+
+C:\Users\계정명\.m2\repository   필요한 라이브러리가 다운받아 진다. 
+우리가 보내는 모든 요청을 DispatcherServlet 받아서 
+컨트롤러를 배정한다
+
+서버가 작동되면서 @Controller 객체를 만든다. 
+만든 객체 목록을 가지고 있다          Index객체  /index 
+                                              /list  
+@RequestMapping("/index")
+
+http://localhost:9000/myapp/index   url을 보고 나는 어떤 컨트롤러를 호출해야지 
+                                    관리중인 목록에서 찾아서 호출해준다 
+
+
+1.web.xml    -> root-context.xml -> servlet-context.xml -> DispatcherServlet
+                                                              
+DispatcherServlet- 클라이언트의 모든 요청을 받고 
+                 - 적절한 컨트롤러를 선택하고 결과 받고 
+                 - ViewResolver객체를 이용해서 jsp 선택해서 클라이언트에게 보내준다 
+
+
+@Controller, @Service, @Repository 
+객체를 생성해놓고 서로 연결 
+
+@Autowird - 대충 알아서 잘못하면 충돌가능성이 있다 
+@Resource - 정밀하게  
+
+
+1. Dto, vo  
+2. Dao - @Repository
+3. Service -  @Service
+4. Controller - @Controller
+
+수행결과를 jsp 보여줄수도 있고 json 으로 보여줄수도 있다 
+                            (restful api 서버)
+
+

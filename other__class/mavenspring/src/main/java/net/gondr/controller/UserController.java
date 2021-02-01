@@ -47,18 +47,29 @@ public class UserController {
 	
 	@RequestMapping(value="login", method=RequestMethod.GET)
 	public String viewLoginPage() {
+		
 		return "user/login";
 	}
 	
 	@RequestMapping(value="login", method=RequestMethod.POST)
-	public String loginProcess(UserVO user, HttpSession session) {
+	public String loginProcess(UserVO user, HttpSession session, Model model) {
 		if(user.getUserid().equals("gondr") && user.getPassword().equals("1234")) {
 			//로그인 성공한거
 			session.setAttribute("user", user);
 			return "redirect:/"; // 메인페이지로 이동
 		} else {
-			return "redirect:/user/login";
+//			session.setAttribute("isLogin", false);
+			model.addAttribute("isLogin", false);
+			return "user/login";
 		}
+	}
+	
+	
+	@RequestMapping(value="logout", method=RequestMethod.GET)
+	public String viewLogoutPage(HttpSession session) {
+		session.removeAttribute("user");
+		
+		return "redirect:/";
 	}
 }
 

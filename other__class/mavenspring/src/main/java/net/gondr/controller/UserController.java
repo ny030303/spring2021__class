@@ -2,11 +2,16 @@ package net.gondr.controller;
 
 import javax.servlet.http.HttpSession;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import net.gondr.dao.UserDAO;
 import net.gondr.domain.UserVO;
 import net.gondr.domain.YYSample2VO;
 import net.gondr.domain.YYSampleVO;
@@ -14,6 +19,9 @@ import net.gondr.domain.YYSampleVO;
 @Controller
 @RequestMapping("/user/")
 public class UserController {
+	
+	@Autowired
+	private UserDAO dao;
 	
 	@RequestMapping(value="regist", method=RequestMethod.GET)
 	public String viewRegistPage() {
@@ -53,7 +61,8 @@ public class UserController {
 	
 	@RequestMapping(value="login", method=RequestMethod.POST)
 	public String loginProcess(UserVO user, HttpSession session, Model model) {
-		if(user.getUserid().equals("gondr") && user.getPassword().equals("1234")) {
+		UserVO getUser = dao.selectUser(user.getUserid());
+		if(user.getUserid().equals(getUser.getUserid()) ) {
 			//로그인 성공한거
 			session.setAttribute("user", user);
 			return "redirect:/"; // 메인페이지로 이동
@@ -71,6 +80,54 @@ public class UserController {
 		session.removeAttribute("user");
 		
 		return "redirect:/";
+	}
+	
+	@RequestMapping(value="info", method=RequestMethod.GET)
+	public String viewInfoPage(HttpSession session) {
+		return "user/info";
+	}
+	
+	@RequestMapping(value="data", method=RequestMethod.GET)
+	public @ResponseBody UserVO getUserData() {
+		UserVO temp = new UserVO();
+		temp.setUserid("gondr");
+		temp.setPassword("1234");
+		temp.setUsername("최선한");
+		return temp;
+	}
+	
+	@GetMapping("/data/{id}")
+	public @ResponseBody UserVO getUseridData(@PathVariable String id) {
+		UserVO user = dao.selectUser(id);
+		if(user == null) {
+			return null;
+		}
+
+		return user;
+	}
+	
+	
+	@RequestMapping(value="register", method=RequestMethod.GET)
+	public String viewRegisterPage() {
+		return "user/register";
+	}
+	
+	@RequestMapping(value="register", method=RequestMethod.POST)
+	public String registerProcess(UserVO user, HttpSession session) {
+		
+		UserVO checkUser = dao.selectUser(user.getUserid());
+		if(checkUser == null) {
+			if(user.getPassword().equals(user.getPasswordCheck())) {
+				dao.insertUser(user);
+				return "redirect:/user/data/" + user.getUserid();
+			} else {
+				session.setAttribute("isSignup", "pwError");
+				return "user/register";
+			}
+		} else {
+			session.setAttribute("isSignup", "false");
+			return "user/register";
+		}
 	}
 }
 

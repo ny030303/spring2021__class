@@ -19,5 +19,9 @@
 		<p>로그인 하시려면 로그인 페이지로 이동하세요</p>
 		<span><a href="/user/login">[로그인]</a></span>
 	</c:if>
+	<c:if test="${empty user }">
+		<p>회원가입 하시려면 회원가입 페이지로 이동하세요</p>
+		<span><a href="/user/register">[회원가입]</a></span>
+	</c:if>
 </body>
 </html>

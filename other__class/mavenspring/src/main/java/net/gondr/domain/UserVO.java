@@ -5,7 +5,7 @@ public class UserVO {
 	private String password;
 	private String passwordCheck;
 	private String username;
-	
+	private String email;
 	
 	public String getUserid() {
 		return userid;
@@ -30,6 +30,12 @@ public class UserVO {
 	}
 	public void setPasswordCheck(String passwordCheck) {
 		this.passwordCheck = passwordCheck;
+	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
 	}
 	
 	

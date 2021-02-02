@@ -5,7 +5,7 @@
 
 <mapper namespace="net.gondr.mappers.UserMapper">
 	<insert id="insertUser" useGeneratedKeys="true" keyProperty="id">
-		INSERT INTO spring_users (userid, username, password) VALUES ( #{userid}, #{username}, #{password})
+		INSERT INTO spring_users (userid, username, password, email) VALUES ( #{userid}, #{username}, #{password}, #{email})
 	</insert>
 	<select id="selectUser" resultType="net.gondr.domain.UserVO">
 		SELECT * FROM spring_users WHERE userid = #{userid}

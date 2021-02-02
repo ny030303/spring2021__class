@@ -62,7 +62,7 @@ public class UserController {
 	@RequestMapping(value="login", method=RequestMethod.POST)
 	public String loginProcess(UserVO user, HttpSession session, Model model) {
 		UserVO getUser = dao.selectUser(user.getUserid());
-		if(user.getUserid().equals(getUser.getUserid()) ) {
+		if(user.getUserid().equals(getUser.getUserid()) &&  user.getPassword().equals(getUser.getPassword())) {
 			//로그인 성공한거
 			session.setAttribute("user", user);
 			return "redirect:/"; // 메인페이지로 이동

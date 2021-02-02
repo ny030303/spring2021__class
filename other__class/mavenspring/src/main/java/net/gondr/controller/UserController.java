@@ -58,9 +58,10 @@ public class UserController {
 			session.setAttribute("user", user);
 			return "redirect:/"; // 메인페이지로 이동
 		} else {
-//			session.setAttribute("isLogin", false);
-			model.addAttribute("isLogin", false);
-			return "user/login";
+			session.setAttribute("isLogin", false);
+//			model.addAttribute("isLogin", false);
+//			return "user/login";
+			return "redirect:/user/login";
 		}
 	}
 	

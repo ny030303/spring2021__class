@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments/layout :: head"></head>
+
+<body>
+	<header th:replace="fragments/layout :: header"></header>
+
+	<div class="container">
+		<div class="row">
+			<div class="col-12">
+				<div class="card" style="border: none;">
+					<div style="text-align: center; margin: 40px;"><img src="/images/oops.png" alt="oops"></div>
+					<div class="card-header" 
+					style="text-align: center;
+						    background: none;
+						    font-size: 34px;
+						    color: #969494;">Something is wrong...</div>
+					<div class="card-body">
+						<h5 class="card-title" th:text="${title}">오류의 클래스</h5>
+						<p class="card-text" th:text="${errorMsg}">오류 메시지</p>
+						<a href="javascript:history.back()" class="btn btn-primary">이전</a>
+						<a href="/" class="btn btn-info">메인페이지로</a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+	<footer th:replace="fragments/layout :: footer"></footer>
+</body>
+</html>

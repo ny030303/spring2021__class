@@ -9,44 +9,15 @@
 
 	<!-- DispatcherServlet Context: 서블릿 디스패쳐가 요청을 처리하는 구조속에서 필요한 빈을 선언하는 곳 -->
 	
-	<!-- 스프링의 @Controller 를 비롯한 다양한 애노테이션이 동작할 수 있도록 Enalble 해줌-->
+	<!-- 스프링의 @Controller 를 비롯한 다양한 애노테이션이 동작할 수 있도록 Enable 해줌-->
 	<annotation-driven />
-
-	<!-- 웹앱루트/resources 로 오는 모든 요청을 /resources 경로로 연결해준다. -->
-	<resources mapping="/resources/**" location="/resources/" />
-
-	<!-- Controller들이 보내는 반환 String 으로 만들어질 View Resolver 셋팅 -->
 	
-<!-- 	
-	ctrl shift c
-	<beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver"> -->
-<!-- 		<beans:property name="prefix" value="/WEB-INF/view/" /> -->
-<!-- 		<beans:property name="suffix" value=".jsp" /> -->
-<!-- 	</beans:bean> -->
-	
-	<!-- Controller, Repositorty, Service 등을 검색할 패키지 -->
-	<context:component-scan base-package="net.gondr.controller" />
-	
-	<!-- 인터셉터 등록하기 -->
-	<beans:bean id="authInter" class="net.gondr.interceptor.AuthInterceptor"></beans:bean>
-	
-	<interceptors>
-		<interceptor>
-			<mapping path="/user/info"/>
-			<mapping path="/board/**"/>
-			<exclude-mapping path="/board/list"/>
-			<exclude-mapping path="/board/list/*"/>
-			<!--
-			*: 0개 또는 그 이상의 글자
-			**: 하위폴더를 포함한 모든 폴더와 텍스트를 의미
-			? : 글자 한개 
-			-->
-			<beans:ref bean="authInter"/>
-		</interceptor>
-	</interceptors>
-	
-	<beans:bean id="templateResolver" 
-		class="org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver">
+	<!-- 전역 익셉션 처리기 -->
+	<beans:bean class="net.gondr.exception.CommonExceptionHandler">
+	</beans:bean>
+		
+	<!-- 타임리프 관련 템플릿 빈들 -->
+	<beans:bean id="templateResolver" class="org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver">
 		<beans:property name="prefix" value="/WEB-INF/template/"></beans:property>
 		<beans:property name="suffix" value=".html"></beans:property>
 		<beans:property name="characterEncoding" value="UTF-8"></beans:property>
@@ -63,5 +34,16 @@
 		<beans:property name="templateEngine" ref="templateEngine"></beans:property>
 		<beans:property name="characterEncoding" value="UTF-8"></beans:property>
 		<beans:property name="order" value="1"></beans:property>
+		
 	</beans:bean>
-</beans:beans> 
+	
+	<!-- Controller, Repositorty, Service 등을 검색할 패키지 -->
+	<context:component-scan base-package="net.gondr.controller" />
+	
+	<beans:bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<beans:property name="maxUploadSize" value="10485760"></beans:property>	
+	</beans:bean>
+	<default-servlet-handler/>
+</beans:beans>
+

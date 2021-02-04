@@ -80,13 +80,18 @@ public class UserController {
 			return "user/login";
 		}
 		System.out.println(user.toString());
+		// 5 증가
 		user.setExp(user.getExp() +5);
-		if(service.checkUserLevel(user) == 1) {
+		service.updateExp(user);
+		int isFull = service.checkUserLevel(user);
+		System.out.println("isFull: " + isFull);
+		if(isFull == 1) {
 			System.out.println(user.toString());
 			user.setExp(0);
 			user.setLevel(user.getLevel()+1);
 			service.updateExp(user);
 		}
+		
 		System.out.println(user.toString());
 		
 		session.setAttribute("user", user);

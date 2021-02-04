@@ -42,6 +42,8 @@
 			<div th:if="${session.user != null}">
 				<button class="btn btn-outline-success" 
 					th:text="${session.user.name} + '님'"></button>
+					<button class="btn btn-outline-info" 
+					th:text="${session.user.level} + ' LEVEL'"></button>
 				<a href="/user/logout" class="btn btn-outline-worning">로그아웃</a>
 			</div>
 		</div>

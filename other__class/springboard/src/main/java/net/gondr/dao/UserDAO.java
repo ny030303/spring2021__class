@@ -8,4 +8,8 @@ public interface UserDAO {
 	public UserVO loginUser(String userid, String password);
 	
 	public void insertUser(UserVO user);
+	
+	public void updateExp(UserVO user);
+	
+	public int checkUserLevel(UserVO user);
 }

@@ -8,4 +8,8 @@ public interface UserService {
 	public void register(UserVO user);
 	
 	public UserVO getUserInfo(String userid);
+	
+	public void updateExp(UserVO user);
+	
+	public int checkUserLevel(UserVO user);
 }

@@ -17,4 +17,12 @@
 		SELECT * FROM spring_users 
 		WHERE userid = #{userid} AND password = PASSWORD(#{password})
 	</select>
+	
+	<update id="updateExp">
+        UPDATE spring_users SET exp=#{exp},level=#{level} WHERE userid = #{userid}
+    </update>
+    
+    <select id="checkUserLevel" resultType="_int">
+    	SELECT if(a.exp <![CDATA[>=]]> b.exp, 1, 0) FROM spring_users a, spring_exp b WHERE a.level = b.level AND a.level = #{level} AND a.userid = #{userid}
+    </select>
 </mapper>

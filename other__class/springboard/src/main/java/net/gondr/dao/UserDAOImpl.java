@@ -34,7 +34,16 @@ public class UserDAOImpl implements UserDAO{
 	
 	@Override
 	public void insertUser(UserVO user) {
-		session.insert(ns + ".insertUser", user);
-		
+		session.insert(ns + ".insertUser", user);	
+	}
+	
+	@Override
+	public void updateExp(UserVO user) {
+		session.update(ns + ".updateExp", user);
+	}
+	
+	@Override
+	public int checkUserLevel(UserVO user) {
+		return session.selectOne(ns + ".checkUserLevel", user);
 	}
 }

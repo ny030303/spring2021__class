@@ -25,4 +25,14 @@ public class UserServiceImpl implements UserService {
 	public void register(UserVO user) {
 		dao.insertUser(user);
 	}
+	
+	@Override
+	public void updateExp(UserVO user) {
+		dao.updateExp(user);
+	}
+	
+	@Override
+	public int checkUserLevel(UserVO user) {
+		return dao.checkUserLevel(user);
+	}
 }

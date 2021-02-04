@@ -15,7 +15,7 @@ public class UserServiceTest {
 	@Autowired
 	private UserService service;
 	
-	@Test
+//	@Test
 	public void insertUser(){
 		UserVO user = new UserVO();
 		user.setName("최선한");
@@ -26,13 +26,13 @@ public class UserServiceTest {
 		service.register(user);
 	}
 	
-	@Test
+//	@Test
 	public void loginUser() {
 		UserVO user = service.login("gondr99", "1234");
 		System.out.println(user);
 	}
 	
-	@Test
+//	@Test
 	public void userInfo() {
 		UserVO user = service.getUserInfo("gondr99");
 		System.out.println(user);

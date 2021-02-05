@@ -79,12 +79,12 @@ public class UserController {
 		if(user == null) {
 			return "user/login";
 		}
-		System.out.println(user.toString());
+//		System.out.println(user.toString());
 		// 5 증가
 		user.setExp(user.getExp() +5);
 		service.updateExp(user);
 		int isFull = service.checkUserLevel(user);
-		System.out.println("isFull: " + isFull);
+//		System.out.println("isFull: " + isFull);
 		if(isFull == 1) {
 			System.out.println(user.toString());
 			user.setExp(0);
@@ -92,7 +92,7 @@ public class UserController {
 			service.updateExp(user);
 		}
 		
-		System.out.println(user.toString());
+//		System.out.println(user.toString());
 		
 		session.setAttribute("user", user);
 		return "redirect:/";

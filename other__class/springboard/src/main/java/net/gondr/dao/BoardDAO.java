@@ -3,18 +3,23 @@ package net.gondr.dao;
 import java.util.List;
 
 import net.gondr.domain.BoardVO;
+import net.gondr.domain.Criteria;
 
 public interface BoardDAO {
-	// 글 쓰는 메서드
+	//글을 쓰는 매서드
 	public void write(BoardVO data);
-	// 글 보는 메서드
+	//글보기 매서드
 	public BoardVO view(Integer id);
-//	글 리스트 보기
+	//글리스트 보기
 	public List<BoardVO> list(Integer start, Integer cnt);
-//	글삭제
+	public List<BoardVO> list(Criteria c);
+	//글삭제
 	public void delete(Integer id);
-//	글수정
+	//글 수정
 	public void update(BoardVO data);
-//	현재 글의 갯수
+	
+	//현재 글의 갯수
 	public Integer getCnt();
+	public Integer getCnt(Criteria c);
+	
 }

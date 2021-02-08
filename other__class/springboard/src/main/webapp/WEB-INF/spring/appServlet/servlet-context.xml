@@ -49,6 +49,7 @@
 	<!-- 인터셉터 등록 -->
 	<beans:bean id="authInter" class="net.gondr.interceptor.AuthInter"></beans:bean>
 	<beans:bean id="nonAuthInter" class="net.gondr.interceptor.NonAuthInter"></beans:bean>
+	<beans:bean id="checkIsUser" class="net.gondr.interceptor.CheckIsUser"></beans:bean>
 	
 	<interceptors>
 		<interceptor>
@@ -56,8 +57,14 @@
 			<beans:ref bean="nonAuthInter"/>
 		</interceptor>
 		<interceptor>
+			
 			<mapping path="/board/write"/>
 			<beans:ref bean="authInter"/>
+		</interceptor>
+		<interceptor>
+			<mapping path="/board/update/**"/>
+			<mapping path="/board/delete/**"/>
+			<beans:ref bean="checkIsUser"/>
 		</interceptor>
 	</interceptors>
 </beans:beans>
